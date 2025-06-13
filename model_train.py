@@ -11,8 +11,21 @@ from model import ResNet18, Residual
 import torch.nn as nn
 import pandas as pd
 from tqdm import tqdm
+import argparse
+from MyModule.SEBlock import SEBlock
 
-def train_val_data_process():
+
+def get_args():
+    parser = argparse.ArgumentParser(description="Train ResNet18 with optional SEBlock")
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
+    parser.add_argument('--epochs', type=int, default=50, help='Number of epochs to train')
+    parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
+    parser.add_argument('--use_se', action='store_true', help='Use SEBlock if set')
+
+    return parser.parse_args()
+
+
+def train_val_data_process(batch_size=32):
     # 定义数据集的路径
     ROOT_TRAIN = './dataset/train'
 
@@ -22,14 +35,14 @@ def train_val_data_process():
     # 加载数据集
     train_data = ImageFolder(ROOT_TRAIN, transform=train_transform)
 
-    train_data, val_data = Data.random_split(train_data, [round(0.8*len(train_data)), round(0.2*len(train_data))])
+    train_data, val_data = Data.random_split(train_data, [round(0.9*len(train_data)), round(0.1*len(train_data))])
     train_dataloader = Data.DataLoader(dataset=train_data,
-                                       batch_size=32,
+                                       batch_size=batch_size,
                                        shuffle=True,
                                        num_workers=2)
 
     val_dataloader = Data.DataLoader(dataset=val_data,
-                                       batch_size=32,
+                                       batch_size=batch_size,
                                        shuffle=True,
                                        num_workers=2)
 
@@ -37,11 +50,11 @@ def train_val_data_process():
 
 
 
-def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
+def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, lr=0.001, save_name="undefined"):
     # 设定训练所用到的设备，有GPU用GPU没有GPU用CPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # 使用Adam优化器，学习率为0.001
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # 损失函数为交叉熵函数
     criterion = nn.CrossEntropyLoss()
     # 将模型放入到训练设备中
@@ -154,7 +167,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
 
     folder_path = "./model"
     file_count = len([f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]) + 1
-    torch.save(best_model_wts, f"./model/best_gln_model{file_count}.pth")
+    torch.save(best_model_wts, f"./model/{save_name}-{file_count}.pth")
     train_process = pd.DataFrame(data={
         "epoch": range(num_epochs),
         "train_loss_all": train_loss_all,
@@ -165,7 +178,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs):
     return train_process, f"./model/best_model{file_count}.pth"
 
 
-def matplot_acc_loss(train_process):
+def matplot_acc_loss(train_process,png_name="undefined"):
     # 显示每一次迭代后的训练集和验证集的损失函数和准确率
     plt.figure(figsize=(12, 4))
     plt.subplot(1, 2, 1)
@@ -181,15 +194,17 @@ def matplot_acc_loss(train_process):
     plt.ylabel("acc")
     plt.legend()
     # plt.show()
-    plt.savefig("process_data.png")
+    plt.savefig(f"{png_name}.png")
 
 
 if __name__ == '__main__':
-    # 加载需要的模型
-    ResNet18 = ResNet18(Residual)
-    # 加载数据集
-    train_data, val_data = train_val_data_process()
-    # 利用现有的模型进行模型的训练
-    train_process,src = train_model_process(ResNet18, train_data, val_data, num_epochs=50)
-    matplot_acc_loss(train_process)
+    args = get_args()
+    now_parameters = f"epochs:{args.epochs}-batch_size:{args.batch_size}-lr:{args.lr}-SEBlock:{args.use_se}".replace('.', '_')
+    attention = SEBlock if args.use_se else None
+    model = ResNet18(Residual, attention=attention)
+    train_data, val_data = train_val_data_process(batch_size=args.batch_size)
+    train_process, src = train_model_process(model, train_data, val_data, num_epochs=args.epochs, lr=args.lr, save_name=now_parameters)
+    # python model_train.py --epochs 50 --batch_size 64 --lr 0.0005 --use_se
+    png_name = "process_data"+now_parameters
+    matplot_acc_loss(train_process,png_name)
     print(f"Finish:{src}")

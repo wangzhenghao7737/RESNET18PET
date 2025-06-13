@@ -19,15 +19,15 @@ def create_data():
     file_path = 'catanddog'
     flower_class = [cla for cla in os.listdir(file_path)]
 
-    # 创建 训练集train 文件夹，并由类名在其目录下创建5个子目录
+    # 创建 训练集train 文件夹，并由类名在其目录下创建2个子目录
     mkfile('dataset/train')
     for cla in flower_class:
         mkfile('dataset/train/' + cla)
 
     # 创建 验证集val 文件夹，并由类名在其目录下创建子目录
-    mkfile('dataset/test')
+    mkfile('dataset/val')
     for cla in flower_class:
-        mkfile('dataset/test/' + cla)
+        mkfile('dataset/val/' + cla)
 
     # 划分比例，训练集 : 测试集 = 9 : 1
     split_rate = 0.1
@@ -42,7 +42,7 @@ def create_data():
             # eval_index 中保存验证集val的图像名称
             if image in eval_index:
                 image_path = cla_path + image
-                new_path = 'dataset/test/' + cla
+                new_path = 'dataset/val/' + cla
                 copy(image_path, new_path)  # 将选中的图像复制到新路径
 
             # 其余的图像保存在训练集train中
@@ -82,7 +82,7 @@ def calculate_image_mean(src):
             image_path = os.path.join(subdir_path, image_file)
             image = cv2.imread(image_path)  # 读取 BGR 图片
             if image is None:
-                print(f"⚠️ 无法读取图片: {image_path}")
+                print(f"⚠ 无法读取图片: {image_path}")
                 continue  # 跳过无效图片
             image = image / 255.0  # 归一化到 [0,1]
             # 累加 BGR 通道的像素值
