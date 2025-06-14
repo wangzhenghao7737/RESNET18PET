@@ -1,0 +1,127 @@
+model\epochs_10-batch_size_16-lr_0_002-SEBlock_False-2.pth
+testing: 100%|██████████| 1140/1140 [00:36<00:00, 31.40batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.76      0.83      0.79       570
+         dog       0.81      0.74      0.78       570
+
+    accuracy                           0.79      1140
+   macro avg       0.79      0.79      0.79      1140
+weighted avg       0.79      0.79      0.79      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[472  98]
+ [146 424]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_10-batch_size_16-lr_0_002-SEBlock_False-2.pth.png
+Test accuracy: 0.7860
+
+model\epochs_10-batch_size_16-lr_0_002-SEBlock_True-6.pth
+testing: 100%|██████████| 1140/1140 [00:59<00:00, 19.15batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.84      0.72      0.77       570
+         dog       0.75      0.86      0.80       570
+
+    accuracy                           0.79      1140
+   macro avg       0.80      0.79      0.79      1140
+weighted avg       0.80      0.79      0.79      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[409 161]
+ [ 79 491]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_10-batch_size_16-lr_0_002-SEBlock_True-6.pth.png
+Test accuracy: 0.7895
+
+model\epochs_30-batch_size_32-lr_0_001-SEBlock_False-4.pth
+testing: 100%|██████████| 1140/1140 [00:40<00:00, 28.04batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.88      0.87      0.87       570
+         dog       0.87      0.88      0.87       570
+
+    accuracy                           0.87      1140
+   macro avg       0.87      0.87      0.87      1140
+weighted avg       0.87      0.87      0.87      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[495  75]
+ [ 69 501]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_30-batch_size_32-lr_0_001-SEBlock_False-4.pth.png
+Test accuracy: 0.8737
+
+model\epochs_30-batch_size_32-lr_0_001-SEBlock_True-7.pth
+testing: 100%|██████████| 1140/1140 [00:57<00:00, 19.94batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.86      0.87      0.87       570
+         dog       0.87      0.86      0.87       570
+
+    accuracy                           0.87      1140
+   macro avg       0.87      0.87      0.87      1140
+weighted avg       0.87      0.87      0.87      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[498  72]
+ [ 78 492]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_30-batch_size_32-lr_0_001-SEBlock_True-7.pth.png
+Test accuracy: 0.8684
+
+model\epochs_5-batch_size_16-lr_0_002-SEBlock_False-3.pth
+testing: 100%|██████████| 1140/1140 [00:49<00:00, 23.25batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.58      0.88      0.70       570
+         dog       0.75      0.35      0.48       570
+
+    accuracy                           0.62      1140
+   macro avg       0.66      0.62      0.59      1140
+weighted avg       0.66      0.62      0.59      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[504  66]
+ [370 200]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_5-batch_size_16-lr_0_002-SEBlock_False-3.pth.png
+Test accuracy: 0.6175
+
+model\epochs_5-batch_size_16-lr_0_002-SEBlock_True-5.pth
+testing: 100%|██████████| 1140/1140 [00:44<00:00, 25.52batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.66      0.75      0.71       570
+         dog       0.72      0.62      0.66       570
+
+    accuracy                           0.69      1140
+   macro avg       0.69      0.69      0.68      1140
+weighted avg       0.69      0.69      0.68      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[430 140]
+ [218 352]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_5-batch_size_16-lr_0_002-SEBlock_True-5.pth.png
+Test accuracy: 0.6860
+
+model\epochs_50-batch_size_32-lr_0_001-SEBlock_False-1.pth
+testing: 100%|██████████| 1140/1140 [00:41<00:00, 27.73batch/s]
+Classification Report:
+              precision    recall  f1-score   support
+
+         cat       0.91      0.90      0.91       570
+         dog       0.90      0.92      0.91       570
+
+    accuracy                           0.91      1140
+   macro avg       0.91      0.91      0.91      1140
+weighted avg       0.91      0.91      0.91      1140
+
+Confusion Matrix (row: true labels, column: predicted labels):
+[[515  55]
+ [ 48 522]]
+Confusion matrix image saved to: results/confusion_matrix_epochs_50-batch_size_32-lr_0_001-SEBlock_False-1.pth.png
+Test accuracy: 0.9096
+
+Process finished with exit code 0

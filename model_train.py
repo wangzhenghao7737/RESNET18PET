@@ -5,7 +5,6 @@ import torch
 from torchvision.datasets import ImageFolder
 from torchvision import transforms
 import torch.utils.data as Data
-import numpy as np
 import matplotlib.pyplot as plt
 from model import ResNet18, Residual
 import torch.nn as nn
@@ -26,13 +25,13 @@ def get_args():
 
 
 def train_val_data_process(batch_size=32):
-    # 定义数据集的路径
+    # Define dataset path
     ROOT_TRAIN = './dataset/train'
 
     normalize = transforms.Normalize([0.48607032,0.45353173,0.4160252 ], [0.06886391,0.06542894,0.0667423 ])
-    # 定义数据集处理方法变量
+    # Define preprocessing steps for dataset
     train_transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), normalize])
-    # 加载数据集
+    # Load dataset
     train_data = ImageFolder(ROOT_TRAIN, transform=train_transform)
 
     train_data, val_data = Data.random_split(train_data, [round(0.9*len(train_data)), round(0.1*len(train_data))])
@@ -51,118 +50,117 @@ def train_val_data_process(batch_size=32):
 
 
 def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, lr=0.001, save_name="undefined"):
-    # 设定训练所用到的设备，有GPU用GPU没有GPU用CPU
+    # Set training device, use GPU if available, otherwise CPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # 使用Adam优化器，学习率为0.001
+    # Use Adam optimizer with learning rate 0.001
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    # 损失函数为交叉熵函数
+    # Use cross-entropy loss function
     criterion = nn.CrossEntropyLoss()
-    # 将模型放入到训练设备中
+    # Move model to training device
     model = model.to(device)
-    # 复制当前模型的参数
+    # Copy initial model weights
     best_model_wts = copy.deepcopy(model.state_dict())
 
-    # 初始化参数
-    # 最高准确度
+    # Initialize parameters
+    # Best accuracy
     best_acc = 0.0
-    # 训练集损失列表
+    # Training loss list
     train_loss_all = []
-    # 验证集损失列表
+    # Validation loss list
     val_loss_all = []
-    # 训练集准确度列表
+    # Training accuracy list
     train_acc_all = []
-    # 验证集准确度列表
+    # Validation accuracy list
     val_acc_all = []
 
     for epoch in range(num_epochs):
         since = time.time()
 
-        # 初始化参数
-        # 训练集损失函数
+        # Initialize parameters
+        # Training loss
         train_loss = 0.0
-        # 训练集准确度
+        # Training accuracy
         train_corrects = 0
-        # 验证集损失函数
+        # Validation loss
         val_loss = 0.0
-        # 验证集准确度
+        # Validation accuracy
         val_corrects = 0
-        # 训练集样本数量
+        # Number of training samples
         train_num = 0
-        # 验证集样本数量
+        # Number of validation samples
         val_num = 0
 
-        # 对每一个mini-batch训练和计算
+        # Train and evaluate on each mini-batch
         for step, (b_x, b_y) in tqdm(enumerate(train_dataloader),total=len(train_dataloader), desc=f"Epoch Train {epoch + 1}/{num_epochs}"):
-            # 将特征放入到训练设备中
+            # Move inputs to training device
             b_x = b_x.to(device)
-            # 将标签放入到训练设备中
+            # Move labels to training device
             b_y = b_y.to(device)
-            # 设置模型为训练模式
+            # Set model to training mode
             model.train()
 
-            # 前向传播过程，输入为一个batch，输出为一个batch中对应的预测
+            # Forward pass: predict outputs for current batch
             output = model(b_x)
-            # 查找每一行中最大值对应的行标
+            # Get predicted class indices
             pre_lab = torch.argmax(output, dim=1)
-            # 计算每一个batch的损失函数
+            # Compute loss for the batch
             loss = criterion(output, b_y)
 
-            # 将梯度初始化为0
+            # Zero gradients
             optimizer.zero_grad()
-            # 反向传播计算
+            # Backpropagation
             loss.backward()
-            # 根据网络反向传播的梯度信息来更新网络的参数，以起到降低loss函数计算值的作用
+            # Update parameters to reduce loss
             optimizer.step()
-            # 对损失函数进行累加
+            # Accumulate loss
             train_loss += loss.item() * b_x.size(0)
-            # 如果预测正确，则准确度train_corrects加1
+            # Count correct predictions
             train_corrects += torch.sum(pre_lab == b_y.data)
-            # 当前用于训练的样本数量
+            # Count total training samples
             train_num += b_x.size(0)
         for step, (b_x, b_y) in tqdm(enumerate(val_dataloader),total=len(val_dataloader), desc=f"Epoch val {epoch + 1}/{num_epochs}"):
-            # 将特征放入到验证设备中
+            # Move inputs to validation device
             b_x = b_x.to(device)
-            # 将标签放入到验证设备中
+            # Move labels to validation device
             b_y = b_y.to(device)
-            # 设置模型为评估模式
+            # Set model to evaluation mode
             model.eval()
-            # 前向传播过程，输入为一个batch，输出为一个batch中对应的预测
+            # Forward pass
             output = model(b_x)
-            # 查找每一行中最大值对应的行标
+            # Get predicted class indices
             pre_lab = torch.argmax(output, dim=1)
-            # 计算每一个batch的损失函数
+            # Compute loss
             loss = criterion(output, b_y)
 
-
-            # 对损失函数进行累加
+            # Accumulate loss
             val_loss += loss.item() * b_x.size(0)
-            # 如果预测正确，则准确度train_corrects加1
+            # Count correct predictions
             val_corrects += torch.sum(pre_lab == b_y.data)
-            # 当前用于验证的样本数量
+            # Count total validation samples
             val_num += b_x.size(0)
 
-        # 计算并保存每一次迭代的loss值和准确率
-        # 计算并保存训练集的loss值
+        # Compute and save loss and accuracy for each epoch
+        # Save training loss
         train_loss_all.append(train_loss / train_num)
-        # 计算并保存训练集的准确率
+        # Save training accuracy
         train_acc_all.append(train_corrects.double().item() / train_num)
 
-        # 计算并保存验证集的loss值
+        # Save validation loss
         val_loss_all.append(val_loss / val_num)
-        # 计算并保存验证集的准确率
+        # Save validation accuracy
         val_acc_all.append(val_corrects.double().item() / val_num)
 
         time_use = time.time() - since
         print('\n' + """Epoch {} Time {:.4f} m {:.4f}s
                 Train Loss: {:.4f} Train Acc: {:.4f}
                 Val Loss: {:.4f} Val Acc: {:.4f}
-                """.format(epoch + 1, time_use // 60, time_use % 60, 
-                           train_loss_all[-1], train_acc_all[-1], 
+                """.format(epoch + 1, time_use // 60, time_use % 60,
+                           train_loss_all[-1], train_acc_all[-1],
                            val_loss_all[-1], val_acc_all[-1]))
         if val_acc_all[-1] > best_acc:
-            # 保存当前最高准确度
+            # Save best accuracy
             best_acc = val_acc_all[-1]
-            # 保存当前最高准确度的模型参数
+            # Save weights of the best-performing model
             best_model_wts = copy.deepcopy(model.state_dict())
 
     folder_path = "./model"
@@ -179,7 +177,7 @@ def train_model_process(model, train_dataloader, val_dataloader, num_epochs=50, 
 
 
 def matplot_acc_loss(train_process,png_name="undefined"):
-    # 显示每一次迭代后的训练集和验证集的损失函数和准确率
+    # Display training and validation loss/accuracy for each epoch
     plt.figure(figsize=(12, 4))
     plt.subplot(1, 2, 1)
     plt.plot(train_process['epoch'], train_process.train_loss_all, "ro-", label="Train loss")
