@@ -29,7 +29,14 @@ This project implements a binary image classification model (e.g., cat vs. dog) 
 
 ##  Installation
 
-Make sure Python 3.9+ is installed. Then install the dependencies:
+Make sure Python 3.9+ is installed. Try to use the Windows system and the Anaconda environment.
+
+```
+# CUDA 11.3
+conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch 
+```
+
+Then install the dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -37,7 +44,7 @@ pip install -r requirements.txt
 
 ------
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Dataset Preparation
 
@@ -127,7 +134,7 @@ python model_test_one_picture.py --img other/another_image.jpg --model model/cus
 
 ------
 
-## ⚙️ AutoDL Instructions
+## AutoDL Platform
 
 Refer to `autodll.md` for guidance on how to deploy and run this project on **AutoDL** platform.
 
